@@ -1,0 +1,22 @@
+---
+# remediation.yml
+# This file will be replaced by the OpenSCAP-generated remediation playbook.
+# See docs/04-remediation.md for instructions.
+#
+# To generate:
+#   oscap xccdf generate fix \
+#     --fix-type ansible \
+#     --result-id "" \
+#     --output remediation.yml \
+#     /root/openscap-reports/baseline-arf-YYYY-MM-DD.xml
+#
+# To run:
+#   ansible-playbook -i inventory.ini remediation.yml
+
+- name: OpenSCAP CIS L1 Remediation
+  hosts: lab
+  become: true
+  tasks:
+    - name: Placeholder — replace with generated tasks
+      ansible.builtin.debug:
+        msg: "Run 04-generate-fixes.sh to generate real remediation tasks"

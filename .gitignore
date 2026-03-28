@@ -1,0 +1,17 @@
+# OpenSCAP reports (large XML/HTML files with system details)
+reports/*.xml
+reports/*.html
+
+# Keep the directory
+!reports/.gitkeep
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Editor files
+*.swp
+*.swo
+*~
+.vscode/
+.idea/
