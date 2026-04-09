@@ -71,35 +71,26 @@ Po otwarciu `baseline-report.html` w przeglądarce:
    - ⚪ **notapplicable** — reguła nie dotyczy tego systemu
    - 🟡 **notchecked** — brak testu dla tej reguły
 
+### Wynik skanu
+
+Podsumowanie skanu:
+- 289 reguł łącznie
+- 170 pass (58.8%) / 119 fail (41.2%)
+- Score: 73.99%
+
 ### Kategoryzacja wyników
 
 Pogrupuj faile według kategorii (patrz LAB_RULES.md):
 
 | Kategoria              | Liczba fail | Przykłady reguł |
 |------------------------|-------------|-----------------|
-| Filesystem & Partitions|             |                 |
-| SSH                    |             |                 |
-| Authentication         |             |                 |
-| Kernel & Sysctl        |             |                 |
-| Network                |             |                 |
-| Logging & Auditing     |             |                 |
-| Services               |             |                 |
-| Filesystem Permissions |             |                 |
+| Authentication         | 30          | Require Re-Authentication for sudo, Login Warning Banners, password policy |
+| Kernel & Sysctl        | 23          | Custom Crypto Policy for CIS, GRUB config permissions (0600), IPv6 sysctl |
+| SSH                    | 14          | SSH Client Alive Count/Interval, Disable Host-Based Auth, Root Login |
+| Network                | 12          | Firewalld loopback trust, IPv6 Router Advertisements, ICMP Redirects |
+| Logging & Auditing     | 11          | Install AIDE, Build AIDE Database, Configure AIDE for Audit Tools |
+| Filesystem & Partitions| 10          | /tmp na osobnej partycji, Disable cramfs/freevxfs mounting |
+| Services               | 9           | /etc/at.allow, /etc/cron.allow, usunąć /etc/cron.deny |
+| Filesystem Permissions | 1           | SSH Server Config File permissions |
+| Inne (umask, coredumps)| 9           | Default umask, Core dumps disabled, httpd do odinstalowania |
 
-*(Wypełnij tabelę na podstawie swojego raportu)*
-
-## Pytania do odpowiedzenia
-
-1. Jaki procent reguł przeszedł (pass)?
-2. Które kategorie mają najwięcej faili?
-3. Czy są jakieś reguły, których NIE da się naprawić po instalacji (np. partycje)?
-4. Ile reguł to "quick wins" — proste do naprawienia?
-
----
-
-### Notatki z realizacji
-
-```
-# Twoje notatki:
-
-```
