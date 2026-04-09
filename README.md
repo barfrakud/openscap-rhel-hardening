@@ -36,7 +36,8 @@ openscap-rhel-hardening-lab/
 │   ├── 05-remediation.md        # Hardening — fix generation, review, Ansible
 │   ├── 06-post-audit.md         # Second scan — comparison, improvements
 │   ├── 07-exceptions.md         # Exception register — formal waivers
-│   └── 08-summary.md            # Conclusions, lessons learned, next steps
+│   ├── 08-summary.md            # Conclusions, lessons learned, next steps
+│   └── 09-lynis-comparison.md   # Lynis audit — cross-tool comparison
 ├── scripts/
 │   ├── 01-install-packages.sh   # Install OpenSCAP + dependencies
 │   ├── 02-setup-apache.sh       # Install & configure Apache + test page
@@ -111,6 +112,17 @@ sudo bash scripts/08-compare-results.sh
 **Tailoring:** 3 rules disabled, 3 values refined  
 **Exceptions:** 5 active (GRUB2 password, SSH AllowUsers, password last change, journald+rsyslog, journal-upload)  
 **Remediation:** Ansible playbook — ok=1193, changed=155, failed=0
+
+## OpenSCAP vs Lynis
+
+| | OpenSCAP | Lynis |
+|---|---|---|
+| **Podejście** | Compliance-driven (pass/fail vs standard) | Advisory-driven (scoring + sugestie) |
+| **Wynik po hardeningu** | **95.45%** (CIS L1 score) | **72**/100 (Hardening Index) |
+| **Przeznaczenie** | Formalny audyt, raporty dla audytorów, auto-remediacja | Szybka ocena, odkrywanie problemów poza zakresem CIS |
+| **Unikalne znaleziska** | GRUB2 password, PAM faillock, journald/rsyslog konflikt | mod_evasive, modsecurity, malware scanner, kompilator |
+
+**Wniosek:** OpenSCAP odpowiada na pytanie *"czy system jest zgodny ze standardem?"* — Lynis odpowiada na pytanie *"co jeszcze można poprawić?"*. Narzędzia uzupełniają się nawzajem.
 
 ## References
 
