@@ -3,40 +3,37 @@
 # Run CIS Level 1 Server scan after hardening — same params as baseline
 set -euo pipefail
 
-REPORT_DIR="/root/openscap-reports"
+REPORT_DIR="/var/log/openscap"
 DATASTREAM="/usr/share/xml/scap/ssg/content/ssg-rhel10-ds.xml"
 TAILORING_FILE="${REPORT_DIR}/tailoring.xml"
-DATE=$(date +%Y-%m-%d)
+TAILORED_PROFILE="cis_server_l1_tailored"
 
-# Use tailored profile if tailoring file exists, otherwise default
-if [[ -f "${TAILORING_FILE}" ]]; then
-  PROFILE="cis_server_l1_tailored"
-  TAILORING_OPTS="--tailoring-file ${TAILORING_FILE}"
-  echo "=== Using tailored profile ==="
-else
-  PROFILE="cis_server_l1"
-  TAILORING_OPTS=""
-  echo "=== Using default profile (no tailoring file found) ==="
+if [[ ! -f "${TAILORING_FILE}" ]]; then
+  echo "ERROR: Tailoring file not found: ${TAILORING_FILE}"
+  echo "Run 04-create-tailoring.sh first."
+  exit 1
 fi
 
 echo "=== Running post-hardening CIS L1 scan ==="
-echo "Profile: ${PROFILE}"
-echo "Date: ${DATE}"
+echo "Profile: ${TAILORED_PROFILE}"
+echo "Tailoring: ${TAILORING_FILE}"
 echo ""
 
 oscap xccdf eval \
-  --profile "${PROFILE}" \
-  ${TAILORING_OPTS} \
-  --results "${REPORT_DIR}/post-results-${DATE}.xml" \
-  --results-arf "${REPORT_DIR}/post-arf-${DATE}.xml" \
-  --report "${REPORT_DIR}/post-report-${DATE}.html" \
+  --profile "${TAILORED_PROFILE}" \
+  --tailoring-file "${TAILORING_FILE}" \
+  --results "${REPORT_DIR}/post-results.xml" \
+  --results-arf "${REPORT_DIR}/post-arf.xml" \
+  --report "${REPORT_DIR}/post-report.html" \
   "${DATASTREAM}" || true
 
 echo ""
 echo "=== Scan complete ==="
 echo "Reports saved to:"
-ls -lh "${REPORT_DIR}"/post-*-${DATE}.*
+ls -lh "${REPORT_DIR}"/post-*
 
 echo ""
 echo "Transfer the HTML report to your local machine for viewing:"
-echo "  scp root@<VM_IP>:${REPORT_DIR}/post-report-${DATE}.html ."
+echo "  scp root@<VM_IP>:${REPORT_DIR}/post-report.html ."
+echo ""
+echo "Next step: 08-compare-results.sh"

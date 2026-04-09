@@ -3,18 +3,21 @@
 # Install OpenSCAP scanner, SCAP Security Guide, and supporting tools
 set -euo pipefail
 
+REPORT_DIR="/var/log/openscap"
+
 echo "=== Installing OpenSCAP and dependencies ==="
 
 dnf install -y \
   openscap-scanner \
   openscap-utils \
   scap-security-guide \
-  httpd
+  lynx \
+  ansible-core
 
 echo ""
-echo "=== Installing Lynis (for cross-tool comparison) ==="
-dnf install -y epel-release 2>/dev/null || true
-dnf install -y lynis || echo "WARNING: Lynis not available — install manually later (see 09-run-lynis.sh)"
+echo "=== Creating report directory ==="
+mkdir -p "${REPORT_DIR}"
+echo "Report directory: ${REPORT_DIR}"
 
 echo ""
 echo "=== Verifying installation ==="
@@ -26,8 +29,8 @@ echo "SSG DataStream files:"
 ls -la /usr/share/xml/scap/ssg/content/ssg-rhel*-ds.xml 2>/dev/null || echo "No RHEL DataStream files found"
 
 echo ""
-echo "SSG Ansible playbooks:"
-ls /usr/share/scap-security-guide/ansible/ 2>/dev/null | head -10 || echo "No Ansible playbooks found"
+echo "Available CIS profiles:"
+oscap info /usr/share/xml/scap/ssg/content/ssg-rhel10-ds.xml 2>/dev/null | grep -i cis || true
 
 echo ""
 echo "=== Done ==="

@@ -3,7 +3,7 @@
 # Install and run Lynis audit for comparison with OpenSCAP results
 set -euo pipefail
 
-REPORT_DIR="/root/openscap-reports"
+REPORT_DIR="/var/log/openscap"
 DATE=$(date +%Y-%m-%d)
 
 mkdir -p "${REPORT_DIR}"

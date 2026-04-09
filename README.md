@@ -1,29 +1,28 @@
 # OpenSCAP RHEL Hardening Lab
 
 > **Series:** Security & Compliance — Lab 1  
-> **Platform:** Red Hat Enterprise Linux 10  
-> **Tools:** OpenSCAP, scap-security-guide, Ansible, Lynis  
+> **Platform:** Red Hat Enterprise Linux 10.1 (Coughlan)  
+> **Tools:** OpenSCAP 1.4.3, scap-security-guide, Ansible, Lynis  
+> **Profile:** CIS Benchmark Level 1 — Server  
 
-## 🎯 Project Goal
+## Project Goal
 
 Hands-on lab demonstrating a full **security compliance audit and hardening cycle** on RHEL 10 using OpenSCAP. The project covers:
 
 - Running a baseline CIS compliance scan on a fresh RHEL 10 install
 - Analyzing the audit report and understanding failure categories
 - Creating a tailoring file to customize the CIS profile
-- Applying automated remediation (bash scripts + Ansible)
+- Applying automated remediation (Ansible playbook)
 - Re-running the scan and measuring improvement
 - Documenting exceptions with formal justification
-- Comparing results with Lynis for cross-validation
-- Documenting findings and lessons learned
 
-## 📋 Lab Scenario
+## Lab Scenario
 
-A freshly installed RHEL 10 server hosts a simple Apache web application. The system must meet **CIS Benchmark Level 1 (Server)** compliance. 
+A freshly installed RHEL 10 server hosts a simple Apache web application. The system must meet **CIS Benchmark Level 1 (Server)** compliance.
 
-The lab walks through the full audit → remediation → re-audit cycle.
+The lab walks through the full audit → tailoring → remediation → re-audit → exceptions cycle.
 
-## 🗂️ Project Structure
+## Project Structure
 
 ```
 openscap-rhel-hardening-lab/
@@ -34,79 +33,86 @@ openscap-rhel-hardening-lab/
 │   ├── 02-environment-setup.md  # VM preparation, RHEL install, Apache setup
 │   ├── 03-baseline-audit.md     # First scan — commands, results, analysis
 │   ├── 04-tailoring.md          # Profile customization — tailoring file
-│   ├── 05-remediation.md        # Hardening steps, scripts, Ansible playbook
+│   ├── 05-remediation.md        # Hardening — fix generation, review, Ansible
 │   ├── 06-post-audit.md         # Second scan — comparison, improvements
 │   ├── 07-exceptions.md         # Exception register — formal waivers
-│   ├── 08-summary.md            # Conclusions, lessons learned, next steps
-│   ├── 09-lynis-comparison.md   # Lynis audit — cross-tool comparison
-│   └── glossary.md              # Key terms: XCCDF, OVAL, STIG, CIS, ARF...
+│   └── 08-summary.md            # Conclusions, lessons learned, next steps
 ├── scripts/
 │   ├── 01-install-packages.sh   # Install OpenSCAP + dependencies
-│   ├── 02-setup-apache.sh       # Install & configure Apache + sample page
-│   ├── 03-run-baseline-scan.sh  # Run first CIS audit
-│   ├── 04-create-tailoring.sh   # Create tailoring file for profile
-│   ├── 05-generate-fixes.sh     # Generate remediation scripts from results
-│   ├── 06-run-post-scan.sh      # Run second audit after hardening
-│   ├── 08-compare-results.sh    # Compare baseline vs post-hardening results
+│   ├── 02-setup-apache.sh       # Install & configure Apache + test page
+│   ├── 03-run-baseline-scan.sh  # Run first CIS audit (baseline)
+│   ├── 04-create-tailoring.sh   # Create tailoring file with autotailor
+│   ├── 05-generate-fixes.sh     # After-tailoring scan + generate fixes
+│   ├── 06-run-post-scan.sh      # Run post-hardening audit
+│   ├── 07-apply-remediation.sh  # Apply Ansible remediation playbook
+│   ├── 08-compare-results.sh    # Compare baseline vs post-hardening
 │   └── 09-run-lynis.sh          # Run Lynis audit for comparison
+├── remediation/
+│   ├── remediation.sh           # Generated bash remediation script
+│   └── remediation.yml          # Generated Ansible remediation playbook
 ├── ansible/
-│   ├── remediation.yml          # Quick-wins hardening playbook (SSH, sysctl, services)
 │   └── inventory.ini            # Ansible inventory for lab VM
-├── reports/                     # Audit reports (HTML/XML) — gitignored
+├── reports/                     # Audit reports (HTML) — for reference
 │   └── .gitkeep
-└── assets/                      # Screenshots, diagrams for documentation
+└── assets/                      # Screenshots, diagrams
     └── .gitkeep
 ```
 
-## 🔧 Prerequisites
+## Prerequisites
 
-- RHEL 10 VM (Minimal Install or Server)
+- RHEL 10 VM (Minimal Install)
 - Active Red Hat subscription (free Developer Subscription is fine)
 - Root or sudo access
 - Internet connectivity for package installation
-- ~2 GB RAM, ~20 GB disk recommended
+- min. 2 GB RAM, min. 20 GB disk
 
 ## Architecture
 
 ```mermaid
-graph TD
-    A[RHEL 10 VM] --> B[Apache Web App]
-    A --> C[OpenSCAP]
-    C --> D[CIS Benchmark L1 Server]
-    C --> E[SSG Content]
-    D --> F[Baseline Scan]
-    F --> G[Tailoring File]
-    G --> H[Remediation Scripts]
-    G --> I[Ansible Quick-Wins]
-    H --> J[Hardening]
-    I --> J
-    J --> K[Re-audit with Tailoring]
-    K --> L[Exception Register]
-    A --> M[Lynis]
-    M --> N[Cross-validation]
+flowchart TD
+    A["RHEL 10 VM\n+ Apache"] --> B["Baseline Scan\n(CIS L1 Server)"]
+    B --> C["Tailoring\n(autotailor)"]
+    C --> D["After-Tailoring Scan"]
+    D --> E["Generate Fixes\n(bash + Ansible)"]
+    E --> F["Review + Apply\n(Ansible playbook)"]
+    F --> G["Post-Hardening Scan"]
+    G --> H["Exception Register"]
 ```
 
-## 🚀 Quick Start
+## Quick Start
 
 ```bash
 # 1. Clone the repo
-git clone https://github.com/barfrakud/openscap-rhel-hardening
+git clone https://github.com/barfrakud/openscap-rhel-hardening-lab
 
-# 2. Copy scripts to your RHEL 10 VM and execute step by step
-# See docs/ for detailed walkthrough
+# 2. Copy scripts to your RHEL 10 VM and run step by step:
+sudo bash scripts/01-install-packages.sh
+sudo bash scripts/02-setup-apache.sh
+sudo bash scripts/03-run-baseline-scan.sh
+sudo bash scripts/04-create-tailoring.sh
+sudo bash scripts/05-generate-fixes.sh
+sudo bash scripts/07-apply-remediation.sh
+sudo bash scripts/06-run-post-scan.sh
+sudo bash scripts/08-compare-results.sh
+
+# See docs/ for detailed walkthrough of each step
 ```
 
-## 📊 Expected Results
+## Results
 
-| Metric              | Baseline Scan | Post-Hardening Scan |
-|----------------------|---------------|---------------------|
-| CIS L1 Pass Rate     | ~40-60%       | ~85-95%             |
-| CAT I Failures       | Several       | 0                   |
-| Total Rules Checked  | ~150-200      | ~150-200            |
+| Metric                 | Baseline Scan | Post-Hardening Scan | Change       |
+|------------------------|---------------|---------------------|--------------|
+| **Score**              | 73.99%        | **95.45%**          | +21.46 pp    |
+| Rules pass             | 170           | 283                 | +113         |
+| Rules fail             | 119           | 5                   | −114         |
+| Rules notapplicable    | 32            | 31                  | −1           |
+| **Fix rate**           |               |                     | **95.8%**    |
 
-*(Actual numbers will be filled in during the lab)*
+**Tailoring:** 3 rules disabled, 3 values refined  
+**Exceptions:** 5 active (GRUB2 password, SSH AllowUsers, password last change, journald+rsyslog, journal-upload)  
+**Remediation:** Ansible playbook — ok=1193, changed=155, failed=0
 
-## 📚 References
+## References
 
 - [OpenSCAP Documentation](https://www.open-scap.org/documentation/)
 - [SCAP Security Guide (SSG)](https://github.com/ComplianceAsCode/content)
@@ -114,6 +120,6 @@ git clone https://github.com/barfrakud/openscap-rhel-hardening
 - [DISA STIG](https://public.cyber.mil/stigs/)
 - [Red Hat — Security Compliance](https://docs.redhat.com/en/documentation/red_hat_enterprise_linux/10/html/security_hardening/)
 
-## 📝 License
+## License
 
 MIT

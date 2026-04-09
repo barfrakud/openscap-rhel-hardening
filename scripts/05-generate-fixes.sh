@@ -1,65 +1,58 @@
 #!/usr/bin/env bash
 # 05-generate-fixes.sh
-# Generate remediation scripts from baseline scan results
+# Run after-tailoring scan, then generate remediation scripts from DataStream
 set -euo pipefail
 
-REPORT_DIR="/root/openscap-reports"
+REPORT_DIR="/var/log/openscap"
 DATASTREAM="/usr/share/xml/scap/ssg/content/ssg-rhel10-ds.xml"
 TAILORING_FILE="${REPORT_DIR}/tailoring.xml"
 TAILORED_PROFILE="cis_server_l1_tailored"
-DATE=$(date +%Y-%m-%d)
 
-# Check for tailoring file
-TAILORING_OPTS=""
-if [[ -f "${TAILORING_FILE}" ]]; then
-  echo "=== Tailoring file found: ${TAILORING_FILE} ==="
-  TAILORING_OPTS="--tailoring-file ${TAILORING_FILE}"
-else
-  echo "=== No tailoring file found — using default profile ==="
-fi
-echo ""
-
-# Find the most recent ARF file
-ARF_FILE=$(ls -t "${REPORT_DIR}"/baseline-arf-*.xml 2>/dev/null | head -1)
-
-if [[ -z "${ARF_FILE}" ]]; then
-  echo "ERROR: No baseline ARF file found in ${REPORT_DIR}"
-  echo "Run 03-run-baseline-scan.sh first."
+if [[ ! -f "${TAILORING_FILE}" ]]; then
+  echo "ERROR: Tailoring file not found: ${TAILORING_FILE}"
+  echo "Run 04-create-tailoring.sh first."
   exit 1
 fi
 
-echo "=== Using ARF file: ${ARF_FILE} ==="
+echo "=== Step 1: After-tailoring scan (pre-remediation baseline) ==="
+oscap xccdf eval \
+  --profile "${TAILORED_PROFILE}" \
+  --tailoring-file "${TAILORING_FILE}" \
+  --results "${REPORT_DIR}/after-tailoring-results.xml" \
+  --results-arf "${REPORT_DIR}/after-tailoring-arf.xml" \
+  --report "${REPORT_DIR}/after-tailoring-report.html" \
+  "${DATASTREAM}" || true
 
 echo ""
-echo "=== Generating Bash remediation script ==="
+echo "After-tailoring report: ${REPORT_DIR}/after-tailoring-report.html"
+
+echo ""
+echo "=== Step 2: Generating Bash remediation script ==="
 oscap xccdf generate fix \
   --fix-type bash \
-  --result-id "" \
-  ${TAILORING_OPTS} \
-  --output "${REPORT_DIR}/remediation-${DATE}.sh" \
-  "${ARF_FILE}"
-echo "Saved: ${REPORT_DIR}/remediation-${DATE}.sh"
+  --profile "${TAILORED_PROFILE}" \
+  --tailoring-file "${TAILORING_FILE}" \
+  --output "${REPORT_DIR}/remediation.sh" \
+  "${DATASTREAM}"
+echo "Saved: ${REPORT_DIR}/remediation.sh"
 
 echo ""
-echo "=== Generating Ansible remediation playbook ==="
+echo "=== Step 3: Generating Ansible remediation playbook ==="
 oscap xccdf generate fix \
   --fix-type ansible \
-  --result-id "" \
-  ${TAILORING_OPTS} \
-  --output "${REPORT_DIR}/remediation-${DATE}.yml" \
-  "${ARF_FILE}"
-echo "Saved: ${REPORT_DIR}/remediation-${DATE}.yml"
+  --profile "${TAILORED_PROFILE}" \
+  --tailoring-file "${TAILORING_FILE}" \
+  --output "${REPORT_DIR}/remediation.yml" \
+  "${DATASTREAM}"
+echo "Saved: ${REPORT_DIR}/remediation.yml"
 
 echo ""
 echo "=== Generated files ==="
-ls -lh "${REPORT_DIR}"/remediation-${DATE}.*
+ls -lh "${REPORT_DIR}"/remediation.*
 
 echo ""
-echo "╔══════════════════════════════════════════════════════╗"
-echo "║  IMPORTANT: Review the scripts before running them! ║"
-echo "║  Make a VM snapshot before applying any fixes!       ║"
-echo "╚══════════════════════════════════════════════════════╝"
+echo "IMPORTANT: Review the scripts before running them!"
+echo "  less ${REPORT_DIR}/remediation.sh"
+echo "  less ${REPORT_DIR}/remediation.yml"
 echo ""
-echo "To review:"
-echo "  less ${REPORT_DIR}/remediation-${DATE}.sh"
-echo "  less ${REPORT_DIR}/remediation-${DATE}.yml"
+echo "Next step: 07-apply-remediation.sh"

@@ -3,18 +3,17 @@
 # Compare baseline and post-hardening scan results
 set -euo pipefail
 
-REPORT_DIR="/root/openscap-reports"
+REPORT_DIR="/var/log/openscap"
 
-# Find most recent baseline and post results
-BASELINE=$(ls -t "${REPORT_DIR}"/baseline-results-*.xml 2>/dev/null | head -1)
-POST=$(ls -t "${REPORT_DIR}"/post-results-*.xml 2>/dev/null | head -1)
+BASELINE="${REPORT_DIR}/baseline-results.xml"
+POST="${REPORT_DIR}/post-results.xml"
 
-if [[ -z "${BASELINE}" ]]; then
+if [[ ! -f "${BASELINE}" ]]; then
   echo "ERROR: No baseline results found. Run 03-run-baseline-scan.sh first."
   exit 1
 fi
 
-if [[ -z "${POST}" ]]; then
+if [[ ! -f "${POST}" ]]; then
   echo "ERROR: No post-hardening results found. Run 06-run-post-scan.sh first."
   exit 1
 fi
