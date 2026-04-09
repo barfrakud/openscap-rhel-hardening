@@ -6,11 +6,27 @@
 
 ### OpenSCAP jako narzędzie
 
--
+*(Opis koncepcji jak działa OpenSCAP oraz workflow pracy z Openscap)*
+
+### Ściąga użytych komend dla OpenSCAP
+
+*(Krótka lista używanych komend oscap z podziałem na etapy pracy z openscap)*
 
 ### Proces audytu i remediacji
 
--
+
+```mermaid
+graph TD
+    A[Start] --> B[Run baseline scan]
+    B --> C[Analyze results]
+    C --> D[Create tailoring file]
+    D --> E[Generate remediation script]
+    E --> F[Apply remediation]
+    F --> G[Run post-scan]
+    G --> H[Compare results]
+    H --> I[Document exceptions]
+    I --> J[End]
+```
 
 ### Profil CIS Level 1
 
