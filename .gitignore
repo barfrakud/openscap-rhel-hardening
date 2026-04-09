@@ -1,8 +1,8 @@
-# OpenSCAP reports (large XML/HTML files with system details)
-reports/*.xml
-reports/*.html
+# OpenSCAP reports - tracked for lab documentation
+# (disabled: reports/*.xml)
+# (disabled: reports/*.html)
 
-# Keep the directory
+# Keep the directory marker (optional now)
 !reports/.gitkeep
 
 # OS files
@@ -15,3 +15,7 @@ Thumbs.db
 *~
 .vscode/
 .idea/
+
+# AI tools
+.claude/
+CLAUDE.md

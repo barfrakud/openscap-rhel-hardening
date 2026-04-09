@@ -11,37 +11,52 @@ z działającym Apache. Zebranie wyników "przed hardingiem" jako punkt odniesie
 
 ```bash
 oscap info /usr/share/xml/scap/ssg/content/ssg-rhel10-ds.xml
-```
 
-*(Zapisz listę profili — znajdź ID profilu CIS Level 1 Server)*
+# Output:
+Title: CIS Red Hat Enterprise Linux 10 Benchmark for Level 1 - Server
+Id: xccdf_org.ssgproject.content_profile_cis_server_l1
+```
 
 ### Uruchomienie skanu
 
 ```bash
 sudo oscap xccdf eval \
-  --profile cis_server_l1 \
-  --results /root/openscap-reports/baseline-results.xml \
-  --results-arf /root/openscap-reports/baseline-arf.xml \
-  --report /root/openscap-reports/baseline-report.html \
+  --profile xccdf_org.ssgproject.content_profile_cis_server_l1 \
+  --results /var/log/openscap/baseline-results.xml \
+  --results-arf /var/log/openscap/baseline-arf.xml \
+  --report /var/log/openscap/baseline-report.html \
   /usr/share/xml/scap/ssg/content/ssg-rhel10-ds.xml
 ```
 
+**Co robi ta komenda:**
+- `--profile xccdf_org.ssgproject.content_profile_cis_server_l1` — używa profilu CIS Level 1 Server
+- `--results /var/log/openscap/baseline-results.xml` — zapisuje surowe wyniki w formacie XCCDF (do dalszego przetwarzania)
+- `--results-arf /var/log/openscap/baseline-arf.xml` — zapisuje wyniki w formacie ARF (Asset Reporting Format, używany przez compliance tools)
+- `--report /var/log/openscap/baseline-report.html` — generuje czytelny raport HTML do przeglądania w przeglądarce
+- Ostatni argument to ścieżka do pliku z definicjami reguł CIS (SSG — Security Scanned Guides)
+
 **Uwaga:** Profil ID może się różnić — użyj dokładnego ID z `oscap info`.
 
-### Podgląd wyników w terminalu
+### Przeglądanie raportu w terminalu (Lynx)
+
+Na serwerze bez GUI zainstaluj przeglądarkę tekstową:
 
 ```bash
-# Podsumowanie — ile pass, ile fail
-oscap xccdf eval \
-  --profile cis_server_l1 \
-  /usr/share/xml/scap/ssg/content/ssg-rhel10-ds.xml 2>&1 | tail -20
+sudo dnf install -y lynx
+lynx /var/log/openscap/baseline-report.html
 ```
 
-### Transfer raportu HTML na maszynę lokalną
+Nawigacja w Lynx:
+- **↑/↓** — przewijanie
+- **Enter** — wejście w link
+- **B** — powrót
+- **Q** — wyjście
+
+### Transfer raportu HTML na maszynę lokalną (opcjonalnie)
 
 ```bash
 # Z maszyny lokalnej (nie z VM):
-scp root@<IP_VM>:/root/openscap-reports/baseline-report.html .
+scp root@<IP_VM>:/var/log/openscap/baseline-report.html .
 ```
 
 ## Analiza raportu

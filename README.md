@@ -1,7 +1,6 @@
 # OpenSCAP RHEL Hardening Lab
 
 > **Series:** Security & Compliance — Lab 1  
-> **Author:** Bartek  
 > **Platform:** Red Hat Enterprise Linux 10  
 > **Tools:** OpenSCAP, scap-security-guide, Ansible, Lynis  
 
@@ -29,7 +28,6 @@ The lab walks through the full audit → remediation → re-audit cycle.
 ```
 openscap-rhel-hardening-lab/
 ├── README.md                    # This file
-├── CLAUDE.md                    # AI assistant context & project rules
 ├── LAB_RULES.md                 # Lab rules, conventions, methodology
 ├── docs/
 │   ├── 01-theory.md             # OpenSCAP theory, SCAP standard, profiles
@@ -92,7 +90,7 @@ graph TD
 
 ```bash
 # 1. Clone the repo
-git clone https://github.com/<your-username>/openscap-rhel-hardening-lab.git
+git clone https://github.com/barfrakud/openscap-rhel-hardening
 
 # 2. Copy scripts to your RHEL 10 VM and execute step by step
 # See docs/ for detailed walkthrough
@@ -107,11 +105,6 @@ git clone https://github.com/<your-username>/openscap-rhel-hardening-lab.git
 | Total Rules Checked  | ~150-200      | ~150-200            |
 
 *(Actual numbers will be filled in during the lab)*
-
-## 🔗 Related Projects
-
-- Docker 5 Tasks (Vol. 1) — containerization fundamentals
-- *(Planned)* Ansible 5 Tasks — configuration management
 
 ## 📚 References
 

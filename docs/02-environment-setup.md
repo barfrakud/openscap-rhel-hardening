@@ -99,7 +99,7 @@ oscap info /usr/share/xml/scap/ssg/content/ssg-rhel10-ds.xml
 ## Krok 6: Utworzenie katalogu na raporty
 
 ```bash
-sudo mkdir -p /root/openscap-reports
+sudo mkdir -p /var/log/openscap
 ```
 
 ## Wynik
@@ -116,7 +116,79 @@ Po wykonaniu tych kroków mamy:
 
 ### Notatki z realizacji
 
-*(Tutaj wklejaj swoje obserwacje, output komend, problemy)*
+
+```
+# Wersja systemu
+cat /etc/redhat-release
+Red Hat Enterprise Linux release 10.1 (Coughlan)
+
+# Wersja Apache
+httpd -v
+Server version: Apache/2.4.63 (Red Hat Enterprise Linux)
+Server built:   Dec 10 2025 00:00:00
+
+# Wersja OSCAP
+oscap --version
+OpenSCAP command line tool (oscap) 1.4.3
+Copyright 2009--2023 Red Hat Inc., Durham, North Carolina.
+
+==== Supported specifications ====
+SCAP Version: 1.3
+XCCDF Version: 1.2
+OVAL Version: 5.11.3
+CPE Version: 2.3
+Asset Identification Version: 1.1
+Asset Reporting Format Version: 1.1
+
+==== Capabilities added by auto-loaded plugins ====
+No plugins have been auto-loaded...
+
+==== Paths ====
+Schema files: /usr/share/openscap/schemas
+Default CPE files: /usr/share/openscap/cpe
+
+==== Inbuilt CPE names ====
+Linux - cpe:/o:linux:linux_kernel:-
+
+==== Supported OVAL objects and associated OpenSCAP probes ====
+OVAL family   OVAL object                  OpenSCAP probe              
+----------    ----------                   ----------                  
+independent   environmentvariable          probe_environmentvariable
+independent   environmentvariable58        probe_environmentvariable58
+independent   family                       probe_family
+independent   filehash58                   probe_filehash58 (SHA-224, SHA-256, SHA-384, SHA-512)
+independent   system_info                  probe_system_info
+independent   textfilecontent              probe_textfilecontent
+independent   textfilecontent54            probe_textfilecontent54
+independent   variable                     probe_variable
+independent   xmlfilecontent               probe_xmlfilecontent
+independent   yamlfilecontent              probe_yamlfilecontent
+linux         iflisteners                  probe_iflisteners
+linux         inetlisteningservers         probe_inetlisteningservers
+linux         partition                    probe_partition
+linux         rpminfo                      probe_rpminfo
+linux         rpmverify                    probe_rpmverify
+linux         rpmverifyfile                probe_rpmverifyfile
+linux         rpmverifypackage             probe_rpmverifypackage
+linux         selinuxboolean               probe_selinuxboolean
+linux         selinuxsecuritycontext       probe_selinuxsecuritycontext
+linux         systemdunitdependency        probe_systemdunitdependency
+linux         systemdunitproperty          probe_systemdunitproperty
+linux         fwupdsecattr                 probe_fwupdsecattr
+unix          dnscache                     probe_dnscache
+unix          file                         probe_file
+unix          fileextendedattribute        probe_fileextendedattribute
+unix          interface                    probe_interface
+unix          password                     probe_password
+unix          process                      probe_process
+unix          process58                    probe_process58
+unix          routingtable                 probe_routingtable
+unix          runlevel                     probe_runlevel
+unix          shadow                       probe_shadow
+unix          symlink                      probe_symlink
+unix          sysctl                       probe_sysctl
+unix          uname                        probe_uname
+unix          xinetd                       probe_xinetd
 
 ```
 # Twoje notatki:
