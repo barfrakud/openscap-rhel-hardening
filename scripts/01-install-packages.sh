@@ -11,6 +11,11 @@ dnf install -y \
   httpd
 
 echo ""
+echo "=== Installing Lynis (for cross-tool comparison) ==="
+dnf install -y epel-release 2>/dev/null || true
+dnf install -y lynis || echo "WARNING: Lynis not available — install manually later (see 09-run-lynis.sh)"
+
+echo ""
 echo "=== Verifying installation ==="
 echo "oscap version:"
 oscap --version

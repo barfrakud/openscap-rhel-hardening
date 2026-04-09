@@ -27,3 +27,8 @@
 | **Lynis**       | Alternatywne narzędzie do audytu — heurystyczne, z punktacją hardening index                  |
 | **PAM**         | Pluggable Authentication Modules — system zarządzania uwierzytelnianiem w Linuksie            |
 | **FIPS 140-2**  | Standard kryptograficzny rządu USA                                                            |
+| **Tailoring**   | Plik XML modyfikujący profil SCAP — wyłączanie reguł, zmiana wartości parametrów              |
+| **Exception**   | Formalny wyjątek — udokumentowana akceptacja niespełnionej reguły z uzasadnieniem             |
+| **Waiver**      | Synonim Exception — formalna zgoda na odstępstwo od wymagania bezpieczeństwa                  |
+| **Compensating Control** | Kontrola zastępcza wdrożona gdy główna reguła nie może być spełniona                  |
+| **Risk Owner**  | Osoba odpowiedzialna za akceptację ryzyka związanego z wyjątkiem                              |

@@ -1,4 +1,4 @@
-# 05 — Audyt końcowy (Post-Hardening Scan)
+# 06 — Audyt końcowy (Post-Hardening Scan)
 
 ## Cel
 

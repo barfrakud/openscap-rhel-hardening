@@ -1,10 +1,23 @@
 #!/usr/bin/env bash
-# 04-generate-fixes.sh
+# 05-generate-fixes.sh
 # Generate remediation scripts from baseline scan results
 set -euo pipefail
 
 REPORT_DIR="/root/openscap-reports"
+DATASTREAM="/usr/share/xml/scap/ssg/content/ssg-rhel10-ds.xml"
+TAILORING_FILE="${REPORT_DIR}/tailoring.xml"
+TAILORED_PROFILE="cis_server_l1_tailored"
 DATE=$(date +%Y-%m-%d)
+
+# Check for tailoring file
+TAILORING_OPTS=""
+if [[ -f "${TAILORING_FILE}" ]]; then
+  echo "=== Tailoring file found: ${TAILORING_FILE} ==="
+  TAILORING_OPTS="--tailoring-file ${TAILORING_FILE}"
+else
+  echo "=== No tailoring file found — using default profile ==="
+fi
+echo ""
 
 # Find the most recent ARF file
 ARF_FILE=$(ls -t "${REPORT_DIR}"/baseline-arf-*.xml 2>/dev/null | head -1)
@@ -22,6 +35,7 @@ echo "=== Generating Bash remediation script ==="
 oscap xccdf generate fix \
   --fix-type bash \
   --result-id "" \
+  ${TAILORING_OPTS} \
   --output "${REPORT_DIR}/remediation-${DATE}.sh" \
   "${ARF_FILE}"
 echo "Saved: ${REPORT_DIR}/remediation-${DATE}.sh"
@@ -31,6 +45,7 @@ echo "=== Generating Ansible remediation playbook ==="
 oscap xccdf generate fix \
   --fix-type ansible \
   --result-id "" \
+  ${TAILORING_OPTS} \
   --output "${REPORT_DIR}/remediation-${DATE}.yml" \
   "${ARF_FILE}"
 echo "Saved: ${REPORT_DIR}/remediation-${DATE}.yml"

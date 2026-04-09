@@ -9,8 +9,9 @@ The project is part of a DevOps/Linux Admin portfolio and will be published on G
 
 - An educational lab with step-by-step documentation
 - A portfolio piece demonstrating security compliance skills
-- A practical exercise: audit → hardening → re-audit cycle on RHEL 10
+- A practical exercise: audit → tailoring → hardening → re-audit cycle on RHEL 10
 - Uses CIS Benchmark Level 1 (Server) profile as the compliance target
+- Includes commercial elements: tailoring file, exception register, Lynis comparison
 
 ## Tech Stack
 
@@ -18,12 +19,13 @@ The project is part of a DevOps/Linux Admin portfolio and will be published on G
 - **Audit tool:** OpenSCAP (`oscap` CLI + `scap-security-guide`)
 - **Remediation:** Bash scripts + Ansible playbooks
 - **Web server:** Apache httpd (simple test page, serves as "workload")
-- **Profile:** CIS Level 1 Server (`cis_server_l1`)
+- **Profile:** CIS Level 1 Server (`cis_server_l1`), tailored variant (`cis_server_l1_tailored`)
+- **Comparison tool:** Lynis (heuristic audit)
 
 ## Key Conventions
 
 ### Documentation
-- All docs are in `docs/` as numbered Markdown files
+- All docs are in `docs/` as numbered Markdown files (01-09 + glossary)
 - Write in **Polish** — this is the author's primary language
 - Include exact commands that were run and their output (truncated if very long)
 - Note every decision: what was done, why, and what was the result
@@ -64,6 +66,7 @@ The project is part of a DevOps/Linux Admin portfolio and will be published on G
 - SSG Ansible: `/usr/share/scap-security-guide/ansible/`
 - DataStream file: `/usr/share/xml/scap/ssg/content/ssg-rhel10-ds.xml`
 - Reports output: `/root/openscap-reports/`
+- Tailoring file: `/root/openscap-reports/tailoring.xml`
 
 ## Do NOT
 
@@ -71,3 +74,4 @@ The project is part of a DevOps/Linux Admin portfolio and will be published on G
 - Do not commit HTML/XML report files (they are large and contain system details)
 - Do not apply STIG profile — we use CIS L1 for this lab
 - Do not skip documentation steps — the learning process IS the deliverable
+- Do not delete tailoring.xml — it is used by scripts 05, 06

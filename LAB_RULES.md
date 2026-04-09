@@ -17,11 +17,14 @@ dopóki poprzedni nie jest ukończony i udokumentowany. Kolejność:
 3. Instalacja OpenSCAP + scap-security-guide
 4. Audyt bazowy (baseline scan)
 5. Analiza raportu — zrozumienie wyników
-6. Generowanie remediacji (bash + Ansible)
-7. Przegląd wygenerowanych fixów — decyzja co aplikujemy
-8. Aplikacja hardeningu
-9. Audyt końcowy (post-hardening scan)
-10. Porównanie wyników i wnioski
+6. Tailoring — dostosowanie profilu CIS do środowiska
+7. Generowanie remediacji (bash + Ansible) z uwzględnieniem tailoringu
+8. Przegląd wygenerowanych fixów — decyzja co aplikujemy
+9. Aplikacja hardeningu (quick-wins playbook + wygenerowane fixy)
+10. Audyt końcowy (post-hardening scan)
+11. Dokumentacja wyjątków (Exception Register)
+12. Porównanie wyników i wnioski
+13. Audyt Lynis — porównanie narzędzi
 
 ### Zasada 2: Dokumentuj wszystko
 
@@ -110,10 +113,13 @@ Laboratorium uznajemy za ukończone, gdy:
 - [ ] OpenSCAP zainstalowany i działa
 - [ ] Audyt bazowy wykonany, raport zapisany
 - [ ] Raport przeanalizowany, kluczowe faile opisane
-- [ ] Remediacja wygenerowana i przejrzana
-- [ ] Hardening zastosowany (wybrane reguły)
-- [ ] Audyt końcowy wykonany
+- [ ] Tailoring file utworzony i zwalidowany
+- [ ] Remediacja wygenerowana i przejrzana (z tailoringiem)
+- [ ] Hardening zastosowany (quick-wins playbook + wybrane reguły)
+- [ ] Audyt końcowy wykonany (z tailoringiem)
+- [ ] Exception Register udokumentowany
 - [ ] Porównanie baseline vs post-hardening udokumentowane
+- [ ] Lynis audit uruchomiony i porównany z OpenSCAP
 - [ ] Wszystko w repo na GitHub z sensowną historią commitów
 
 ## Kategorie reguł CIS — na co zwracamy uwagę

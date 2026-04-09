@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# 06-compare-results.sh
+# 08-compare-results.sh
 # Compare baseline and post-hardening scan results
 set -euo pipefail
 
@@ -15,7 +15,7 @@ if [[ -z "${BASELINE}" ]]; then
 fi
 
 if [[ -z "${POST}" ]]; then
-  echo "ERROR: No post-hardening results found. Run 05-run-post-scan.sh first."
+  echo "ERROR: No post-hardening results found. Run 06-run-post-scan.sh first."
   exit 1
 fi
 
