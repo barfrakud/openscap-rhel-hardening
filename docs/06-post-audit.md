@@ -9,20 +9,28 @@ wyników z audytem bazowym.
 
 ```bash
 sudo oscap xccdf eval \
-  --profile cis_server_l1 \
-  --results /root/openscap-reports/post-results.xml \
-  --results-arf /root/openscap-reports/post-arf.xml \
-  --report /root/openscap-reports/post-report.html \
+  --profile cis_server_l1_tailored \
+  --tailoring-file /var/log/openscap/tailoring.xml \
+  --results /var/log/openscap/post-results.xml \
+  --results-arf /var/log/openscap/post-arf.xml \
+  --report /var/log/openscap/post-report.html \
   /usr/share/xml/scap/ssg/content/ssg-rhel10-ds.xml
 ```
 
 ## Krok 2: Transfer raportu
 
 ```bash
-scp root@<IP_VM>:/root/openscap-reports/post-report.html .
+scp root@<IP_VM>:/var/log/openscap/post-report.html .
 ```
 
 ## Krok 3: Porównanie wyników
+
+> **Uwaga do interpretacji:** Audyt końcowy używa tailored profilu. Trzy reguły
+> wyłączone w tailoringu (`partition_for_tmp`, `partition_for_var`, `package_httpd_removed`)
+> nie pojawiają się w raporcie końcowym (`notselected`). Zmniejsza to całkowitą liczbę
+> reguł w porównaniu z audytem bazowym — uwzględnij to przy interpretacji różnicy w score.
+> Reguły partycji `/var/log`, `/var/log/audit`, `/home` nadal pojawiają się jako `fail`
+> (są w zakresie profilu) i wysą udokumentowane jako EXC-001..003.
 
 ### Tabela porównawcza
 

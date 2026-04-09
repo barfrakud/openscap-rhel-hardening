@@ -7,24 +7,30 @@ bezpieczeństwa. Podejście hybrydowe: automatyczna generacja + ręczny przeglą
 
 ## Krok 1: Generowanie skryptu remediacyjnego
 
-### Bash — fixy tylko dla reguł które failowały
+Generujemy fixy z DataStream używając tailored profilu — nie z pliku ARF.
+Dzięki temu skrypt automatycznie pomija reguły wyłączone w tailoringu
+(np. `package_httpd_removed` — Apache nie zostanie usunięty).
+
+### Bash
 
 ```bash
 sudo oscap xccdf generate fix \
   --fix-type bash \
-  --result-id "" \
-  --output /root/openscap-reports/remediation.sh \
-  /root/openscap-reports/baseline-arf.xml
+  --profile cis_server_l1_tailored \
+  --tailoring-file /var/log/openscap/tailoring.xml \
+  --output /var/log/openscap/remediation.sh \
+  /usr/share/xml/scap/ssg/content/ssg-rhel10-ds.xml
 ```
 
-### Ansible — fixy tylko dla reguł które failowały
+### Ansible
 
 ```bash
 sudo oscap xccdf generate fix \
   --fix-type ansible \
-  --result-id "" \
-  --output /root/openscap-reports/remediation.yml \
-  /root/openscap-reports/baseline-arf.xml
+  --profile cis_server_l1_tailored \
+  --tailoring-file /var/log/openscap/tailoring.xml \
+  --output /var/log/openscap/remediation.yml \
+  /usr/share/xml/scap/ssg/content/ssg-rhel10-ds.xml
 ```
 
 ## Krok 2: Przegląd wygenerowanych fixów
@@ -33,16 +39,17 @@ sudo oscap xccdf generate fix \
 
 ```bash
 # Przejrzyj skrypt bash
-less /root/openscap-reports/remediation.sh
+less /var/log/openscap/remediation.sh
 
 # Przejrzyj playbook Ansible
-less /root/openscap-reports/remediation.yml
+less /var/log/openscap/remediation.yml
 ```
 
 ### Na co zwrócić uwagę:
 
-1. **Fixy partycji** — np. osobna partycja `/tmp` — wymagają przebudowy dysku,
-   zazwyczaj je pomijamy w istniejącym systemie
+1. **Fixy partycji** — reguły `partition_for_tmp` i `partition_for_var` są wyłączone
+   w tailoringu — nie pojawią się w skrypcie. Reguły `partition_for_var_log` i podobne
+   nie są w zakresie CIS L1 — również nie pojawią się w skrypcie
 2. **Fixy SSH** — sprawdź czy nie zablokujesz sobie dostępu
 3. **Fixy PAM/hasła** — sprawdź czy nie stracisz możliwości logowania
 4. **Fixy kernel** — zazwyczaj bezpieczne (sysctl)
@@ -50,14 +57,18 @@ less /root/openscap-reports/remediation.yml
 
 ### Decyzje — co aplikujemy, co pomijamy
 
-| Reguła / Kategoria     | Decyzja          | Uzasadnienie                     |
-|------------------------|------------------|----------------------------------|
-| Partycje /tmp, /var    | ❌ Pomijam        | Wymaga przebudowy dysków         |
-| SSH hardening          | ✅ Aplikuję       | Bezpieczne, nie wpływa na Apache |
-| Polityka haseł         | ✅ Aplikuję       | Standardowy hardening            |
-| Kernel sysctl          | ✅ Aplikuję       | Niskie ryzyko                    |
-| Wyłączenie usług       | ⚠️ Selektywnie   | Sprawdzam każdą usługę           |
-| Auditd/rsyslog         | ✅ Aplikuję       | Standardowe logowanie            |
+| Reguła / Kategoria                          | Decyzja                       | Uzasadnienie                                             |
+|----------------------------------------------|-------------------------------|----------------------------------------------------------|
+| Partycje /tmp, /var                          | ⛔ Wyłączone w tailoringu     | Reguły zdeaktywowane — nie dotyczą środowiska               |
+| GRUB2 bootloader password                    | ❌ Pomijam                    | VM zarządzana przez hypervisor; udokumentowane jako EXC-001   |
+| AIDE (file integrity monitoring)             | ❌ Pomijam                    | Organizacja używa alternatywnego FIM; udokumentowane jako EXC-002 |
+| SSH AllowUsers/AllowGroups                   | ❌ Pomijam                    | Centralne LDAP/AD; udokumentowane jako EXC-003              |
+| httpd removal                                | ⛔ Wyłączone w tailoringu     | Rola serwera webowego — Apache jest wymaganym serwisem    |
+| Polityka haseł (minlen, maxage, tmout)       | ✅ Aplikuję (refine-value)    | Wartości dostosowane w tailoringu                        |
+| SSH hardening                                | ✅ Aplikuję                   | Bezpieczne, nie wpływa na Apache                         |
+| Kernel sysctl                                | ✅ Aplikuję                   | Niskie ryzyko                                            |
+| Wyłączenie usług                             | ⚠️ Selektywnie              | Sprawdzam każdą usługę — nie wygaszam httpd               |
+| Auditd/rsyslog                               | ✅ Aplikuję                   | Standardowe logowanie                                    |
 
 *(Zaktualizuj tabelę na podstawie swoich wyników)*
 
@@ -67,14 +78,14 @@ less /root/openscap-reports/remediation.yml
 
 ```bash
 # PRZED uruchomieniem — zrób snapshot VM!
-sudo bash /root/openscap-reports/remediation.sh
+sudo bash /var/log/openscap/remediation.sh
 ```
 
 ### Opcja B: Ansible playbook
 
 ```bash
 sudo ansible-playbook -i "localhost," -c local \
-  /root/openscap-reports/remediation.yml
+  /var/log/openscap/remediation.yml
 ```
 
 ### Opcja C: Selektywna — ręcznie wybrane fixy

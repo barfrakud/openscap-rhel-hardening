@@ -34,37 +34,56 @@ Każdy wyjątek dokumentujemy w formacie:
 
 ### Wyjątki
 
-#### EXC-001: Osobna partycja /tmp
+> **Nota:** Reguły partycji (`partition_for_var_log`, `partition_for_var_log_audit`,
+> `partition_for_home`) pierwotnie planowane jako wyjątki okazały się **poza zakresem
+> CIS Level 1** — należą do Level 2 i mają status `notselected` w profilu bazowym.
+> Poniższe wyjątki dotyczą reguł, które **faktycznie failują** w CIS L1 i mają
+> uzasadnienie biznesowe uniemożliwiające remediation.
+
+#### EXC-001: Hasło bootloadera GRUB2
 
 | Pole                    | Wartość                                         |
 |-------------------------|-------------------------------------------------|
 | **Exception ID**        | EXC-001                                         |
-| **Rule ID**             | *(uzupełnij)*                                   |
-| **Rule Title**          | Ensure /tmp is a separate partition              |
-| **Severity**            | Medium                                          |
+| **Rule ID**             | `xccdf_org.ssgproject.content_rule_grub2_password` |
+| **Rule Title**          | Ensure bootloader password is set               |
+| **Severity**            | High                                            |
 | **Status**              | Accepted                                        |
-| **Justification**       | System zainstalowany bez osobnych partycji. Przebudowa dysku wymaga pełnej reinstalacji i migracji danych. |
-| **Compensating Control**| Monitoring użycia dysku (df alerts), noexec/nosuid na /tmp via systemd tmp.mount |
+| **Justification**       | VM działa w środowisku hypervisora (KVM/Proxmox). Fizyczny dostęp do konsoli jest kontrolowany przez platformę wirtualizacyjną. GRUB password byłby nieoperacyjny przy zdalnym restarcie i nie dodaje mierzalnej wartości bezpieczeństwa w tym modelu. |
+| **Compensating Control**| Dostęp do konsoli VM chroniony przez ACL hypervisora; audyt logowań do platformy wirtualizacyjnej |
 | **Risk Owner**          | *(imię/rola)*                                   |
 | **Date Granted**        | *(data)*                                        |
-| **Review Date**         | *(data + 6 miesięcy)*                           |
+| **Review Date**         | *(data + 12 miesięcy)*                          |
 
-#### EXC-002: *(kolejna reguła)*
+#### EXC-002: AIDE — File Integrity Monitoring
 
 | Pole                    | Wartość                                         |
 |-------------------------|-------------------------------------------------|
 | **Exception ID**        | EXC-002                                         |
-| **Rule ID**             | *(uzupełnij)*                                   |
-| **Rule Title**          | *(uzupełnij)*                                   |
-| **Severity**            | *(uzupełnij)*                                   |
+| **Rule ID**             | `xccdf_org.ssgproject.content_rule_package_aide_installed`, `aide_build_database`, `aide_periodic_cron_checking`, `aide_check_audit_tools` |
+| **Rule Title**          | Install AIDE / Configure file integrity monitoring |
+| **Severity**            | Medium                                          |
 | **Status**              | Accepted                                        |
-| **Justification**       | *(uzupełnij)*                                   |
-| **Compensating Control**| *(uzupełnij)*                                   |
-| **Risk Owner**          | *(uzupełnij)*                                   |
-| **Date Granted**        | *(uzupełnij)*                                   |
-| **Review Date**         | *(uzupełnij)*                                   |
+| **Justification**       | Organizacja używa alternatywnego rozwiązania FIM (Red Hat Insights Advisor lub zewnętrzny SIEM z agentem). Instalacja AIDE spowodowałaby duplikację funkcji i konflikty z istniejącym rozwiązaniem. |
+| **Compensating Control**| Aktywny agent FIM dostarczany przez centralną platformę bezpieczeństwa; alerty przy zmianach plików systemowych |
+| **Risk Owner**          | *(imię/rola)*                                   |
+| **Date Granted**        | *(data)*                                        |
+| **Review Date**         | *(data + 6 miesięcy)*                           |
 
-*(Powtórz dla każdej reguły, której nie spełniamy)*
+#### EXC-003: SSH — ograniczenie dostępu użytkowników (AllowUsers/AllowGroups)
+
+| Pole                    | Wartość                                         |
+|-------------------------|-------------------------------------------------|
+| **Exception ID**        | EXC-003                                         |
+| **Rule ID**             | `xccdf_org.ssgproject.content_rule_sshd_limit_user_access` |
+| **Rule Title**          | Ensure SSH access is limited                    |
+| **Severity**            | Medium                                          |
+| **Status**              | Accepted                                        |
+| **Justification**       | Środowisko używa centralnego uwierzytelniania LDAP/Active Directory. Statyczna lista `AllowUsers`/`AllowGroups` w `sshd_config` byłaby nieoperacyjna — wymagałaby aktualizacji per-host przy każdej zmianie kont. Kontrola dostępu realizowana na poziomie LDAP group membership. |
+| **Compensating Control**| Dostęp SSH ograniczony przez LDAP group policy; MFA wymagane dla kont uprzywilejowanych; logi SSH forwarded do SIEM |
+| **Risk Owner**          | *(imię/rola)*                                   |
+| **Date Granted**        | *(data)*                                        |
+| **Review Date**         | *(data + 6 miesięcy)*                           |
 
 ## Proces wyjątków w środowisku komercyjnym
 

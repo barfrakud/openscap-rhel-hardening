@@ -7,6 +7,7 @@ echo "=== Installing OpenSCAP and dependencies ==="
 
 dnf install -y \
   openscap-scanner \
+  openscap-utils \
   scap-security-guide \
   httpd
 

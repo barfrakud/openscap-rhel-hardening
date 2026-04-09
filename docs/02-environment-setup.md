@@ -87,7 +87,7 @@ curl http://localhost
 
 ```bash
 # Instalacja narzędzi
-sudo dnf install -y openscap-scanner scap-security-guide
+sudo dnf install -y openscap-scanner openscap-utils scap-security-guide
 
 # Weryfikacja
 oscap --version
@@ -108,7 +108,7 @@ Po wykonaniu tych kroków mamy:
 
 - [x] RHEL 10 z Minimal Install
 - [x] Apache serwuje stronę testową na porcie 80
-- [x] OpenSCAP + scap-security-guide zainstalowane
+- [x] OpenSCAP + openscap-utils + scap-security-guide zainstalowane
 - [x] Katalog na raporty utworzony
 - [x] System gotowy do pierwszego audytu
 
